@@ -3,61 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0e27">
     <title>Toca Cell</title>
+    <link rel="manifest" href="manifest.json">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: #0a0e27;
+            color: #fff;
+        }
         .screen { height: 100vh; display: flex; flex-direction: column; }
         .hidden { display: none !important; }
-        .container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; }
-        .setup-card { background: white; padding: 48px 32px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 400px; width: 100%; text-align: center; }
-        .logo { font-size: 80px; margin-bottom: 16px; animation: bounce 2s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        h1 { color: #667eea; margin-bottom: 8px; font-size: 32px; }
-        p { color: #666; margin-bottom: 32px; }
-        input { width: 100%; padding: 16px; margin-bottom: 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; transition: all 0.3s; }
-        input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-        button { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        button:active { transform: translateY(0); }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        
+        /* Setup Screen - Glassmorphism */
+        .container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .setup-card { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px);
+            padding: 48px 32px; 
+            border-radius: 32px; 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            max-width: 400px; 
+            width: 100%; 
+            text-align: center; 
+        }
+        .logo { font-size: 80px; margin-bottom: 16px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.5)); }
+        h1 { color: #fff; margin-bottom: 8px; font-size: 36px; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        p { color: rgba(255,255,255,0.8); margin-bottom: 32px; }
+        input { 
+            width: 100%; 
+            padding: 16px; 
+            margin-bottom: 16px; 
+            border: 2px solid rgba(255,255,255,0.3); 
+            border-radius: 16px; 
+            font-size: 16px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            color: #fff;
+        }
+        input::placeholder { color: rgba(255,255,255,0.6); }
+        input:focus { outline: none; border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        button { 
+            width: 100%;
+            padding: 16px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            border: none; 
+            border-radius: 16px; 
+            font-size: 18px; 
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(102, 126, 234, 0.6); }
+        
+        /* Header - Dark Mode */
+        .header { 
+            background: #1a1f3a;
+            color: white; 
+            padding: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
         .header h2, .header h3 { flex: 1; }
-        .header button { width: auto; padding: 10px 20px; font-size: 14px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
-        #usersList { flex: 1; overflow-y: auto; background: #f5f5f5; }
+        .header button { 
+            width: auto;
+            padding: 10px 20px; 
+            font-size: 14px;
+            background: rgba(102, 126, 234, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Users List - Dark Cards */
+        #usersList { flex: 1; overflow-y: auto; background: #0a0e27; }
         .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 48px; text-align: center; }
-        .empty-icon { font-size: 80px; margin-bottom: 24px; opacity: 0.5; }
-        .empty-title { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 12px; }
-        .empty-text { color: #666; font-size: 16px; line-height: 1.6; }
-        .user-item { padding: 16px 20px; background: white; margin: 8px 12px; border-radius: 16px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .user-item:hover { transform: translateX(8px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-        .avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
+        .empty-icon { font-size: 80px; margin-bottom: 24px; opacity: 0.3; }
+        .empty-title { font-size: 24px; font-weight: bold; color: #fff; margin-bottom: 12px; }
+        .empty-text { color: rgba(255,255,255,0.5); font-size: 16px; line-height: 1.6; }
+        .user-item { 
+            padding: 16px 20px; 
+            background: #1a1f3a;
+            margin: 8px 12px;
+            border-radius: 20px;
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .user-item:hover { 
+            transform: translateX(8px);
+            background: #252b4a;
+            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+        }
+        .avatar { 
+            width: 56px; 
+            height: 56px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 24px; 
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+            object-fit: cover;
+        }
         .user-info { flex: 1; }
-        .user-name { font-weight: bold; margin-bottom: 4px; font-size: 16px; color: #333; }
-        .user-phone { color: #999; font-size: 14px; }
-        .online-dot { width: 14px; height: 14px; background: #4caf50; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 8px rgba(76, 175, 80, 0.5); animation: pulse 2s infinite; }
+        .user-name { font-weight: bold; margin-bottom: 4px; font-size: 16px; color: #fff; }
+        .user-phone { color: rgba(255,255,255,0.5); font-size: 14px; }
+        .online-dot { 
+            width: 14px; 
+            height: 14px; 
+            background: #00ff88; 
+            border-radius: 50%; 
+            border: 3px solid #1a1f3a;
+            box-shadow: 0 0 12px #00ff88;
+            animation: pulse 2s infinite;
+        }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        #messagesList { flex: 1; overflow-y: auto; background: #e5ddd5; padding: 16px; }
-        .message { padding: 12px 16px; margin: 8px 0; max-width: 70%; border-radius: 12px; word-wrap: break-word; animation: slideIn 0.3s; }
+        
+        /* Messages - Dark Theme */
+        #messagesList { 
+            flex: 1; 
+            overflow-y: auto; 
+            background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 100%);
+            padding: 16px;
+        }
+        .message { 
+            padding: 12px 16px; 
+            margin: 8px 0; 
+            max-width: 70%; 
+            border-radius: 16px; 
+            word-wrap: break-word;
+            animation: slideIn 0.3s;
+        }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .message.sent { background: #dcf8c6; margin-left: auto; border-bottom-right-radius: 4px; }
-        .message.received { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-bottom-left-radius: 4px; }
-        .message-time { font-size: 11px; color: #666; margin-top: 4px; text-align: right; }
-        .input-area { display: flex; padding: 16px; background: white; border-top: 1px solid #e0e0e0; gap: 12px; }
-        .input-area input { flex: 1; margin: 0; border-radius: 24px; padding: 12px 20px; }
-        .input-area button { width: 48px; height: 48px; padding: 0; border-radius: 50%; font-size: 20px; }
-        #contactStatus { font-size: 13px; opacity: 0.9; font-weight: normal; }
-        .fab { position: fixed; bottom: 24px; right: 24px; width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; font-size: 32px; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.3); transition: transform 0.2s; }
-        .fab:hover { transform: scale(1.1); }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; padding: 32px; border-radius: 24px; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        .modal-content h2 { margin-bottom: 24px; color: #667eea; }
+        .message.sent { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+        .message.received { 
+            background: #1a1f3a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-bottom-left-radius: 4px;
+        }
+        .message-time { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; text-align: right; }
+        
+        /* Audio Message */
+        .audio-message { display: flex; align-items: center; gap: 12px; }
+        .audio-message audio { flex: 1; height: 32px; }
+        
+        /* Input Area - Dark */
+        .input-area { 
+            display: flex; 
+            padding: 16px; 
+            background: #1a1f3a;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            gap: 12px;
+        }
+        .input-area input { 
+            flex: 1; 
+            margin: 0;
+            border-radius: 24px;
+            padding: 12px 20px;
+            background: #0a0e27;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .input-area button { 
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border-radius: 50%;
+            font-size: 20px;
+        }
+        
+        #contactStatus { font-size: 13px; opacity: 0.7; font-weight: normal; }
+        
+        /* FAB - Floating Action Button */
+        .fab { 
+            position: fixed; 
+            bottom: 24px; 
+            right: 24px; 
+            width: 64px; 
+            height: 64px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            border: none; 
+            font-size: 32px; 
+            cursor: pointer; 
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.5);
+            transition: all 0.3s;
+        }
+        .fab:hover { transform: scale(1.1) rotate(90deg); box-shadow: 0 12px 48px rgba(102, 126, 234, 0.7); }
+        
+        /* Modal - Dark Glass */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { 
+            background: #1a1f3a;
+            padding: 32px; 
+            border-radius: 24px; 
+            max-width: 400px; 
+            width: 90%; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .modal-content h2 { margin-bottom: 24px; color: #fff; }
         .modal-content button { margin-top: 8px; }
-        .btn-secondary { background: #e0e0e0 !important; color: #333 !important; }
-        .my-number { background: #f0f0f0; padding: 16px; border-radius: 12px; margin: 16px 0; text-align: center; font-size: 18px; font-weight: bold; color: #667eea; }
+        .btn-secondary { background: rgba(255,255,255,0.1) !important; color: #fff !important; }
+        .my-number { background: rgba(102, 126, 234, 0.2); padding: 16px; border-radius: 12px; margin: 16px 0; text-align: center; font-size: 18px; font-weight: bold; color: #667eea; }
+        
+        /* Avatar Upload */
+        .avatar-upload { position: relative; width: 120px; height: 120px; margin: 0 auto 24px; }
+        .avatar-upload img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid rgba(102, 126, 234, 0.3); }
+        .avatar-upload input { display: none; }
+        .avatar-upload label { 
+            position: absolute; 
+            bottom: 0; 
+            right: 0; 
+            width: 40px; 
+            height: 40px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        /* Recording */
+        .recording { animation: recordPulse 1s infinite; }
+        @keyframes recordPulse { 0%, 100% { background: #ff4444; } 50% { background: #ff0000; } }
+        
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        ::-webkit-scrollbar-track { background: #0a0e27; }
+        ::-webkit-scrollbar-thumb { background: #667eea; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #764ba2; }
     </style>
 </head>
 <body>
@@ -83,7 +278,7 @@
             <div class="empty-state">
                 <div class="empty-icon">👥</div>
                 <div class="empty-title">Nenhum contato ainda</div>
-                <div class="empty-text">Clique no botão + para adicionar contatos pelo número!</div>
+                <div class="empty-text">Clique no botão + para adicionar!</div>
             </div>
         </div>
         <button class="fab" id="btnAddContact">+</button>
@@ -100,6 +295,7 @@
         </div>
         <div id="messagesList"></div>
         <div class="input-area">
+            <button id="btnAudio" title="Gravar áudio">🎤</button>
             <input type="text" id="messageInput" placeholder="Digite uma mensagem..." autocomplete="off">
             <button id="btnSend">➤</button>
         </div>
@@ -117,211 +313,20 @@
     <div id="settingsModal" class="modal hidden">
         <div class="modal-content">
             <h2>Configurações</h2>
+            <div class="avatar-upload">
+                <img id="avatarPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%23667eea' width='120' height='120'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='48' fill='white'%3E👤%3C/text%3E%3C/svg%3E" alt="Avatar">
+                <input type="file" id="avatarInput" accept="image/*">
+                <label for="avatarInput">📷</label>
+            </div>
             <p>Seu número:</p>
             <div class="my-number" id="myNumber"></div>
-            <p style="color: #666; font-size: 14px; margin-top: 16px;">Compartilhe seu número para que outros possam te adicionar!</p>
-            <button id="btnLogout" style="background: #f44336 !important; margin-top: 24px;">Sair</button>
+            <p style="color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 16px;">Compartilhe para que outros te adicionem!</p>
+            <button id="btnLogout" style="background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%) !important; margin-top: 24px;">Sair</button>
             <button class="btn-secondary" id="btnCloseSettings">Fechar</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const sb = window.supabase.createClient(
-            'https://bbqrusqxoynmvmphbnqa.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJicXJ1c3F4b3lubXZtcGhibnFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4OTMzNDYsImV4cCI6MjA4NzQ2OTM0Nn0.mg_M0yaIsP5ICCrQKteFatbIDcZ4oR-N-DsD1qqX60k'
-        );
-
-        let user = null, myData = null, contact = null, channel = null;
-
-        window.onload = async () => {
-            const { data } = await sb.auth.getSession();
-            if (data.session) {
-                user = data.session.user;
-                myData = { id: user.id, phone: 'Carregando...', name: 'Usuário' };
-                await sb.from('users').update({ is_online: true }).eq('id', user.id);
-                
-                // Carregar dados do usuário
-                const { data: userData } = await sb.from('users').select('*').eq('id', user.id).maybeSingle();
-                if (userData) myData = userData;
-                
-                show('homeScreen');
-                loadContacts();
-            } else {
-                show('setupScreen');
-            }
-        };
-
-document.getElementById('btnRegister').onclick = async () => {
-            const name = document.getElementById('nameInput').value.trim();
-            const phone = document.getElementById('phoneInput').value.trim();
-            if (!name || !phone) return alert('Preencha todos os campos');
-
-            const { data, error } = await sb.auth.signInAnonymously();
-            if (error) return alert('Erro: ' + error.message);
-
-            await sb.from('users').insert({ id: data.user.id, phone, name, is_online: true });
-            user = data.user;
-            myData = { id: user.id, phone, name };
-            show('homeScreen');
-            loadContacts();
-        };
-
-        async function loadContacts() {
-            // Carregar contatos que EU adicionei
-            const { data: myContacts } = await sb.from('contacts').select('contact_phone').eq('user_id', user.id);
-            
-            // Carregar pessoas que ME mandaram mensagem (solicitações)
-            const { data: receivedMessages } = await sb.from('messages').select('sender_id').eq('receiver_id', user.id);
-            const senderIds = [...new Set(receivedMessages?.map(m => m.sender_id) || [])];
-            
-            const allPhones = myContacts?.map(c => c.contact_phone) || [];
-            const { data: contactUsers } = await sb.from('users').select().in('phone', allPhones);
-            const { data: senderUsers } = await sb.from('users').select().in('id', senderIds);
-            
-            const allUsers = [...(contactUsers || []), ...(senderUsers || [])];
-            const uniqueUsers = Array.from(new Map(allUsers.map(u => [u.id, u])).values());
-
-            const list = document.getElementById('usersList');
-            
-            if (uniqueUsers.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">👥</div>
-                        <div class="empty-title">Nenhum contato ainda</div>
-                        <div class="empty-text">Clique no botão + para adicionar contatos pelo número!</div>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = '';
-            
-            uniqueUsers.forEach(u => {
-                const div = document.createElement('div');
-                div.className = 'user-item';
-                div.onclick = () => openChat(u);
-                div.innerHTML = `
-                    <div class="avatar">${u.name[0].toUpperCase()}</div>
-                    <div class="user-info">
-                        <div class="user-name">${u.name}</div>
-                        <div class="user-phone">${u.phone}</div>
-                    </div>
-                    ${u.is_online ? '<div class="online-dot"></div>' : ''}
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        document.getElementById('btnAddContact').onclick = () => {
-            document.getElementById('addContactModal').classList.remove('hidden');
-            document.getElementById('addContactInput').value = '';
-        };
-
-        document.getElementById('btnConfirmAdd').onclick = async () => {
-            const phone = document.getElementById('addContactInput').value.trim();
-            if (!phone) return alert('Digite um número');
-
-            const { data: userExists } = await sb.from('users').select().eq('phone', phone).single();
-            if (!userExists) return alert('Usuário não encontrado com esse número');
-
-            await sb.from('contacts').insert({ user_id: user.id, contact_phone: phone, contact_user_id: userExists.id });
-            
-            document.getElementById('addContactModal').classList.add('hidden');
-            loadContacts();
-        };
-
-        document.getElementById('btnCancelAdd').onclick = () => {
-            document.getElementById('addContactModal').classList.add('hidden');
-        };
-
-        document.getElementById('btnSettings').onclick = () => {
-            if (myData && myData.phone) {
-                document.getElementById('myNumber').textContent = myData.phone;
-                document.getElementById('settingsModal').classList.remove('hidden');
-            }
-        };
-
-        document.getElementById('btnCloseSettings').onclick = () => {
-            document.getElementById('settingsModal').classList.add('hidden');
-        };
-
-        async function openChat(c) {
-            contact = c;
-            document.getElementById('contactName').textContent = c.name;
-            document.getElementById('contactStatus').textContent = c.is_online ? '🟢 Online' : '⚫ Offline';
-            show('chatScreen');
-            
-            const { data } = await sb.from('messages').select()
-                .or(`and(sender_id.eq.${user.id},receiver_id.eq.${c.id}),and(sender_id.eq.${c.id},receiver_id.eq.${user.id})`)
-                .order('created_at');
-            
-            const list = document.getElementById('messagesList');
-            list.innerHTML = '';
-            data.forEach(m => addMsg(m));
-            list.scrollTop = list.scrollHeight;
-
-            if (channel) sb.removeChannel(channel);
-            channel = sb.channel('msgs').on('postgres_changes', 
-                { event: 'INSERT', schema: 'public', table: 'messages' },
-                (p) => {
-                    const m = p.new;
-                    if ((m.sender_id === c.id && m.receiver_id === user.id) ||
-                        (m.sender_id === user.id && m.receiver_id === c.id)) {
-                        addMsg(m);
-                    }
-                }
-            ).subscribe();
-        }
-
-        function addMsg(m) {
-            const list = document.getElementById('messagesList');
-            const div = document.createElement('div');
-            div.className = `message ${m.sender_id === user.id ? 'sent' : 'received'}`;
-            const time = new Date(m.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            div.innerHTML = `${m.content}<div class="message-time">${time}</div>`;
-            list.appendChild(div);
-            list.scrollTop = list.scrollHeight;
-        }
-
-        document.getElementById('btnSend').onclick = async () => {
-            const input = document.getElementById('messageInput');
-            const content = input.value.trim();
-            if (!content) return;
-            await sb.from('messages').insert({ sender_id: user.id, receiver_id: contact.id, content });
-            input.value = '';
-        };
-
-        document.getElementById('messageInput').onkeypress = (e) => {
-            if (e.key === 'Enter') document.getElementById('btnSend').click();
-        };
-
-        document.getElementById('btnBlock').onclick = async () => {
-            if (confirm(`Bloquear ${contact.name}?`)) {
-                await sb.from('blocked').insert({ user_id: user.id, blocked_user_id: contact.id });
-                await sb.from('contacts').delete().eq('user_id', user.id).eq('contact_phone', contact.phone);
-                document.getElementById('btnBack').click();
-            }
-        };
-
-        document.getElementById('btnBack').onclick = () => {
-            if (channel) sb.removeChannel(channel);
-            show('homeScreen');
-            loadContacts();
-        };
-
-        document.getElementById('btnLogout').onclick = async () => {
-            await sb.from('users').update({ is_online: false }).eq('id', user.id);
-            await sb.auth.signOut();
-            user = null;
-            document.getElementById('settingsModal').classList.add('hidden');
-            show('setupScreen');
-        };
-
-        function show(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>

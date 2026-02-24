@@ -168,10 +168,24 @@ document.getElementById('btnRegister').onclick = async () => {
         };
 
         async function loadContacts() {
-            const { data: contacts } = await sb.from('contacts').select('contact_phone').eq('user_id', user.id);
+            // Carregar contatos que EU adicionei
+            const { data: myContacts } = await sb.from('contacts').select('contact_phone').eq('user_id', user.id);
             
-            if (!contacts || contacts.length === 0) {
-                document.getElementById('usersList').innerHTML = `
+            // Carregar pessoas que ME mandaram mensagem (solicitações)
+            const { data: receivedMessages } = await sb.from('messages').select('sender_id').eq('receiver_id', user.id);
+            const senderIds = [...new Set(receivedMessages?.map(m => m.sender_id) || [])];
+            
+            const allPhones = myContacts?.map(c => c.contact_phone) || [];
+            const { data: contactUsers } = await sb.from('users').select().in('phone', allPhones);
+            const { data: senderUsers } = await sb.from('users').select().in('id', senderIds);
+            
+            const allUsers = [...(contactUsers || []), ...(senderUsers || [])];
+            const uniqueUsers = Array.from(new Map(allUsers.map(u => [u.id, u])).values());
+
+            const list = document.getElementById('usersList');
+            
+            if (uniqueUsers.length === 0) {
+                list.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">👥</div>
                         <div class="empty-title">Nenhum contato ainda</div>
@@ -181,13 +195,9 @@ document.getElementById('btnRegister').onclick = async () => {
                 return;
             }
 
-            const phones = contacts.map(c => c.contact_phone);
-            const { data: users } = await sb.from('users').select().in('phone', phones);
-
-            const list = document.getElementById('usersList');
             list.innerHTML = '';
             
-            users.forEach(u => {
+            uniqueUsers.forEach(u => {
                 const div = document.createElement('div');
                 div.className = 'user-item';
                 div.onclick = () => openChat(u);

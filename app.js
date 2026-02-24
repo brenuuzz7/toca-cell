@@ -222,12 +222,21 @@ document.getElementById('btnSend').onclick = async () => {
     const input = document.getElementById('messageInput');
     const content = input.value.trim();
     if (!content) return;
-    await sb.from('messages').insert({ 
+    
+    const newMessage = {
         sender_id: user.id, 
         receiver_id: contact.id, 
         content,
-        message_type: 'text'
-    });
+        message_type: 'text',
+        created_at: new Date().toISOString()
+    };
+    
+    // Mostrar imediatamente
+    addMsg(newMessage);
+    
+    // Enviar pro banco
+    await sb.from('messages').insert(newMessage);
+    
     input.value = '';
 };
 
